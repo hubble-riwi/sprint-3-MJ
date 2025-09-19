@@ -14,4 +14,9 @@ public class Client
         Phone = phone;
         Email = email;
     }
+
+    public int ReturnDocument()
+    {
+        return Document;
+    }
 }
