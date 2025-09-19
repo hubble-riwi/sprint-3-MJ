@@ -1,7 +1,8 @@
-﻿
+﻿using RiwiMusic.Clases;
+using Spotify;
 
 bool flag = true;
-
+Spotify.RiwiMusic riwiMusic = new Spotify.RiwiMusic();
 
 Dictionary<string, Action> actions = new Dictionary<string, Action>();
 actions.Add("1", Concerts);
@@ -37,6 +38,7 @@ while (flag)
 
 void Clients()
 {
+    Console.Clear();
     bool flag = true;
 
     while (flag)
@@ -50,10 +52,114 @@ void Clients()
                       ">> ");
         
         string option = Console.ReadLine();
+        string validation;
 
         switch (option)
         {
+            case "1":
+                Console.Write("Ingrese el documento del cliente: ");
+                validation = Console.ReadLine();
+
+                if (int.TryParse(validation, out int Document))
+                {
+                    Console.Write("Ingrese el nombre: ");
+                    string Name = Console.ReadLine();
+                    
+                    Console.Write("Ingrese el telefono: ");
+                    validation = Console.ReadLine();
+
+                    if (int.TryParse(validation, out int Phone))
+                    {
+                        Console.Write("Ingrese el email: ");
+                        string Email = Console.ReadLine();
+                        
+                        riwiMusic.CreateClient(Document, Name, Phone, Email);
+                        Console.WriteLine("Cliente creado! \n ");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: Ingreso un campo invalido, intentelo de nuevo");  
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Error: Ingreso un campo invalido, intentelo de nuevo");
+                }
+                break;
             
+            case "2":
+                var clients = riwiMusic.GetClients();
+                
+                Console.WriteLine("Listado de clientes");
+                foreach (var client in clients)
+                {
+                    Console.WriteLine($"- Documento: {client.ReturnDocument()} \n" +
+                                      $"- Nombre: {client.Name} \n" +
+                                      $"- Telefono: {client.Phone} \n" +
+                                      $"- Email: {client.Email}\n ");
+                }
+
+                break;
+            case "3":
+                Console.Write("Ingrese el documento del cliente: ");
+                validation = Console.ReadLine();
+
+                if (int.TryParse(validation, out int id))
+                {
+                    if (riwiMusic.TryGetClient(id, out Client client))
+                    {
+                        Console.Write($"Nombre anterior: {client.Name}/ Nombre: ");
+                        string NewName = Console.ReadLine();
+                        
+                        client.Name =  NewName;
+                        
+                        Console.Write($"Telefono anterior: {client.Phone}/ Telefono: ");
+                        validation = Console.ReadLine();
+
+                        if (int.TryParse(validation, out int Phone))
+                        {
+                            client.Phone = Phone;
+                            
+                            Console.Write($"Email anterior: {client.Email}/ Email:");
+                            string email = Console.ReadLine();
+                            
+                            client.Email = email;
+                            Console.WriteLine("Cliente actualizado!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error: Ingreso un campo invalido, intentelo de nuevo");
+                        }
+                        
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cliente no encontrado!");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Error: Ingreso un campo invalido, intentelo de nuevo");
+                }
+                break;
+            
+            case "4":
+                Console.Write("Ingrese el documento del cliente: ");
+                validation = Console.ReadLine();
+
+                if (int.TryParse(validation, out int document))
+                {
+                    if (riwiMusic.DeleteClient(document))
+                    {
+                        Console.WriteLine("Cliente eliminado!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cliente no encontrado!");
+                    }
+                }
+
+                break;
         }
     }
 }
