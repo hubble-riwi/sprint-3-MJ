@@ -1,5 +1,13 @@
 ﻿bool flag = true;
 
+
+Dictionary<string, Action> actions = new Dictionary<string, Action>();
+actions.Add("1", Concerts);
+actions.Add("2", Clients);
+actions.Add("3", Tickets);
+actions.Add("4", HistoryBuys);
+actions.Add("5", Querys);
+
 while (flag)
 {
     Console.Write("-- Riwi Music --\n" +
@@ -12,10 +20,40 @@ while (flag)
                   ">> ");
     string option =  Console.ReadLine();
 
-    switch (option)
+    if (new List<string> { "1", "2", "3", "4", "5" }.Contains(option))
     {
-        default:
-            Console.WriteLine("Invalid option!");
-            break;
+        actions[option]();
+    } else if (option == "6")
+    {
+        flag = false;
     }
+    else
+    {
+        Console.WriteLine("Ingrese una opcion valida!");
+    }
+}
+
+void Clients()
+{
+    
+}
+
+void Tickets()
+{
+    
+}
+
+void Concerts()
+{
+    
+}
+
+void HistoryBuys()
+{
+    
+}
+
+void Querys()
+{
+    
 }
