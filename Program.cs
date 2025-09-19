@@ -1,4 +1,6 @@
-﻿bool flag = true;
+﻿
+
+bool flag = true;
 
 
 Dictionary<string, Action> actions = new Dictionary<string, Action>();
@@ -35,7 +37,25 @@ while (flag)
 
 void Clients()
 {
-    
+    bool flag = true;
+
+    while (flag)
+    {
+        Console.Write("-- Clientes-- \n" +
+                      "1. Registrar nuevo cliente \n" +
+                      "2. Listar clientes\n" +
+                      "3. Editar cliente \n" +
+                      "4. Eliminar cliente\n" +
+                      "5. Regresar\n" +
+                      ">> ");
+        
+        string option = Console.ReadLine();
+
+        switch (option)
+        {
+            
+        }
+    }
 }
 
 void Tickets()
