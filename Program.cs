@@ -158,15 +158,168 @@ void Clients()
                         Console.WriteLine("Cliente no encontrado!");
                     }
                 }
-
                 break;
+            case "5":
+                flag = false;
+                break;
+            default:
+            {
+                Console.WriteLine("Ingrese una opcion valida!");
+                break;
+            }
         }
     }
 }
 
 void Tickets()
-{
-    
+{   
+    Console.Clear();
+    bool flag = true;
+
+    while (flag)
+    {
+        Console.Write("-- Tiquetes --\n" +
+                      "1. Vender tiquete \n" +
+                      "2. Mostrar tiquetes \n" +
+                      "3. Editar tiquete \n" +
+                      "4. Eliminar tiquete \n" +
+                      "5. Salir\n" +
+                      ">> ");
+        string option =  Console.ReadLine();
+        switch (option)
+        {
+            case "1":
+                {
+                    Console.Write("Ingrese el documento del cliente: ");
+                    int docClient = int.Parse(Console.ReadLine());
+
+                    if (!riwiMusic.TryGetClient(docClient, out Client client))
+                    {
+                        Console.WriteLine("Cliente no encontrado. Regístrelo primero.");
+                        break;
+                    }
+
+
+                    Console.WriteLine("Lista de conciertos disponibles:");
+                    int idx = 0;
+                    foreach (var concert in riwiMusic.GetConcerts())
+                    {
+                        Console.WriteLine($"{idx}. {concert.Name} | {concert.Place} | {concert.DateOn} {concert.TimeOn} | Precio: {concert.BasePrice}");
+                        idx++;
+                    }
+
+                    Console.Write("Ingrese el ID del concierto: ");
+                    int idConcert = int.Parse(Console.ReadLine());
+
+                    if (!riwiMusic.TryGetConcert(idConcert, out Concert concertSelected))
+                    {
+                        Console.WriteLine("Concierto no encontrado.");
+                        break;
+                    }
+
+
+                    Console.Write("Ingrese la cantidad de tiquetes: ");
+                    int quantity = int.Parse(Console.ReadLine());
+
+
+                    decimal total = concertSelected.BasePrice * quantity;
+
+
+                    riwiMusic.CreateTicket(docClient, idConcert, quantity, total, DateOnly.FromDateTime(DateTime.Now));
+
+                    Console.WriteLine($"Compra registrada! Total a pagar: {total}");
+                    break;
+                        
+                }
+            case "2":
+            {
+                if (riwiMusic.GetConcerts().Count == 0)
+                {
+                    Console.WriteLine("No Hay tiquetes vendidos.");
+                }
+                else
+                {
+                    Console.WriteLine("Lista de Tiquetes vendidos:");
+                    int i = 0;
+                    foreach (var ticket in riwiMusic.GetTickets())
+                    {
+                        Console.WriteLine($"{i}. Cliente: {ticket.DocumentClient} | ConciertoID: {ticket.IdConcert} | Cantidad: {ticket.QuantityTickets} | Total: {ticket.Total} | Fecha: {ticket.DateBuy}");
+                        i++;
+                    }
+                }
+                break;
+            }
+            case "3":
+                {
+                    if (riwiMusic.GetConcerts().Count == 0)
+                    {
+                        Console.WriteLine("No Hay tiquetes vendidos.");
+                    }
+                    else
+                    {
+                        Console.Write("Ingrese el ID del tiquete a editar: ");
+                        int id = int.Parse(Console.ReadLine());
+                        if (riwiMusic.TryGetTicket(id, out Tickets ticket))
+                        {
+                            Console.Write($"Cantidad anterior: {ticket.QuantityTickets}/ Nueva cantidad: ");
+                            int newQuantity = int.Parse(Console.ReadLine());
+                            ticket.QuantityTickets = newQuantity;
+
+                            if (riwiMusic.TryGetConcert(ticket.IdConcert, out Concert concert))
+                            {
+                                ticket.Total = concert.BasePrice * newQuantity;
+                                Console.WriteLine("Tiquete actualizado!");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Error al actualizar el total. Concierto no encontrado.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Tiquete no encontrado!");
+                        }
+                    }
+                    
+                    
+                    break;
+                }
+            case "4":
+                {
+                    if (riwiMusic.GetTickets().Count == 0)
+                    {
+                        Console.WriteLine("No hay tiquetes para eliminar.");
+                    }
+                    else
+                    {
+                        Console.Write("Ingrese el ID del tiquete a eliminar: ");
+                        int id = int.Parse(Console.ReadLine());
+                    
+                        if (riwiMusic.TryGetTicket(id, out Tickets ticket))
+                        {
+                            riwiMusic.DeleteTicket(id);
+                            Console.WriteLine("Tiquete eliminado!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Tiquete no encontrado!");
+                        }
+                    }
+                    break;
+                }
+            case "5":
+                {
+                    flag = false;
+                    Console.Clear();
+                    break;
+                }
+            default:
+                {
+                    Console.WriteLine("Ingrese una opcion valida!");
+                    break;
+                }
+        }
+    }
 }
 
 void Concerts()
@@ -250,61 +403,75 @@ void Concerts()
                 }
             case "2":
             {
-                Console.WriteLine("Lista de Conciertos:\n");
-                int index = 0;
-                foreach (var concert in riwiMusic.GetConcerts())
+                if (riwiMusic.GetConcerts().Count == 0)
                 {
-                    string artistas = string.Join(", ", concert.Artists);
-                    Console.WriteLine($"ID: {index} - Nombre: {concert.Name} - Artistas: {artistas} - Lugar: {concert.Place} - Fecha: {concert.DateOn} - Hora: {concert.TimeOn}");
-                    index++;
+                    Console.WriteLine("No Hay conciertos registrados.");
+                }
+                else
+                {
+                    Console.WriteLine("Lista de Conciertos:\n");
+                    int index = 0;
+                    foreach (var concert in riwiMusic.GetConcerts())
+                    {
+                        string artistas = string.Join(", ", concert.Artists);
+                        Console.WriteLine($"ID: {index} - Nombre: {concert.Name} - Artistas: {artistas} - Lugar: {concert.Place} - Fecha: {concert.DateOn} - Hora: {concert.TimeOn}");
+                        index++;
+                    }
                 }
                 break;    
             }
             case "3":
             {
-                Console.Write("Ingrese el ID del concierto a editar: ");
-                int id = int.Parse(Console.ReadLine());
-
-                if (riwiMusic.TryGetConcert(id, out Concert concert))
+                if (riwiMusic.GetConcerts().Count == 0)
                 {
-                    Console.WriteLine($"✏ Editando concierto: {concert.Name}");
-
-                    Console.Write($"Nuevo nombre (actual: {concert.Name}): ");
-                    string newName = Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(newName))
-                        concert.Name = newName;
-
-                    Console.WriteLine($"Artistas actuales: {string.Join(", ", concert.Artists)}");
-                    Console.Write("Ingrese los nuevos artistas (separados por comas, deje vacío para no cambiar): ");
-                    string newArtists = Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(newArtists))
-                        concert.Artists = newArtists.Split(',').Select(a => a.Trim()).ToList();
-
-                    Console.Write($"Nueva fecha (YYYY-MM-DD) (actual: {concert.DateOn}): ");
-                    string newDate = Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(newDate))
-                        concert.DateOn = DateOnly.Parse(newDate);
-
-                    Console.Write($"Nueva hora (HH:MM) (actual: {concert.TimeOn}): ");
-                    string newTime = Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(newTime))
-                        concert.TimeOn = TimeOnly.Parse(newTime);
-
-                    Console.Write($"Nuevo lugar (actual: {concert.Place}): ");
-                    string newPlace = Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(newPlace))
-                        concert.Place = newPlace;
-
-                    Console.Write($"Nuevo precio base (actual: {concert.BasePrice}): ");
-                    string newPrice = Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(newPrice))
-                        concert.BasePrice = decimal.Parse(newPrice);
-
-                    Console.WriteLine("Concierto actualizado correctamente!");
+                    Console.WriteLine("No Hay conciertos registrados.");
                 }
                 else
                 {
-                    Console.WriteLine("No se encontró el concierto con ese ID.");
+                    Console.Write("Ingrese el ID del concierto a editar: ");
+                    int id = int.Parse(Console.ReadLine());
+
+                    if (riwiMusic.TryGetConcert(id, out Concert concert))
+                    {
+                        Console.WriteLine($"✏ Editando concierto: {concert.Name}");
+
+                        Console.Write($"Nuevo nombre (actual: {concert.Name}): ");
+                        string newName = Console.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(newName))
+                            concert.Name = newName;
+
+                        Console.WriteLine($"Artistas actuales: {string.Join(", ", concert.Artists)}");
+                        Console.Write("Ingrese los nuevos artistas (separados por comas, deje vacío para no cambiar): ");
+                        string newArtists = Console.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(newArtists))
+                            concert.Artists = newArtists.Split(',').Select(a => a.Trim()).ToList();
+
+                        Console.Write($"Nueva fecha (YYYY-MM-DD) (actual: {concert.DateOn}): ");
+                        string newDate = Console.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(newDate))
+                            concert.DateOn = DateOnly.Parse(newDate);
+
+                        Console.Write($"Nueva hora (HH:MM) (actual: {concert.TimeOn}): ");
+                        string newTime = Console.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(newTime))
+                            concert.TimeOn = TimeOnly.Parse(newTime);
+
+                        Console.Write($"Nuevo lugar (actual: {concert.Place}): ");
+                        string newPlace = Console.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(newPlace))
+                            concert.Place = newPlace;
+
+                        Console.Write($"Nuevo precio base (actual: {concert.BasePrice}): ");
+                        string newPrice = Console.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(newPrice))
+                            concert.BasePrice = decimal.Parse(newPrice);
+
+                        Console.WriteLine("Concierto actualizado correctamente!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("No se encontró el concierto con ese ID.");
+                    }
                 }
                 break;
             }
@@ -337,14 +504,7 @@ void Concerts()
                     break;
                 }
         }
-        {
-            
-        }
     }
-    
-    
-
-
 }
 
 void HistoryBuys()
