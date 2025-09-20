@@ -435,7 +435,7 @@ void Concerts()
 
                     if (riwiMusic.TryGetConcert(id, out Concert concert))
                     {
-                        Console.WriteLine($"✏ Editando concierto: {concert.Name}");
+                        Console.WriteLine($"Editando concierto: {concert.Name}");
 
                         Console.Write($"Nuevo nombre (actual: {concert.Name}): ");
                         string newName = Console.ReadLine();
