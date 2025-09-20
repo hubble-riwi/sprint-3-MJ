@@ -46,7 +46,7 @@ public class RiwiMusic
             if (idTicket == i)
             {
                 ticket = ListTickets[i];
-                found = true;
+                return true;
             }
         }
 
@@ -64,6 +64,11 @@ public class RiwiMusic
     public List<Client> GetClients()
     {
         return ListClients;
+    }
+    
+    public List<Tickets> GetTickets()
+    {
+        return ListTickets;
     }
 
     public bool DeleteClient(int document)
@@ -89,6 +94,14 @@ public class RiwiMusic
         if (idConcert >= 0 && idConcert < ListConcerts.Count)
         {
             ListConcerts.RemoveAt(idConcert);
+        }
+    }
+    
+    public void DeleteTicket(int idTicket)
+    {
+        if (idTicket >= 0 && idTicket < ListTickets.Count)
+        {
+            ListTickets.RemoveAt(idTicket);
         }
     }
 
