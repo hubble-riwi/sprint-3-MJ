@@ -181,5 +181,46 @@ void HistoryBuys()
 
 void Querys()
 {
-    
+    Console.Clear();
+    bool flag = true;
+
+    while (flag)
+    {
+        Console.Write("-- Consultas avanzadas-- \n" +
+                      "1. Consultar conciertos por ciudad\n" +
+                      "2. Consultar conciertos por rango de fechas\n " +
+                      "3. Consultar el concierto con más tiquetes vendidos\n " +
+                      "4. Consultar ingresos totales de un concierto\n" +
+                      "5. Consultar cliente con más compras realizadas \n" +
+                      ">> ");
+        string option = Console.ReadLine();
+
+        switch (option)
+        {
+            case "1":
+                Console.Write("Ingrese la ciudad: ");
+                string city = Console.ReadLine();
+                var concerts =  riwiMusic.GetConcerts();
+                var ConcertsPerCity = from c in concerts where c.Place == city select c;
+
+                if (ConcertsPerCity.Count() == 0)
+                {
+                    Console.WriteLine("No hay conciertos en esta ciudad");
+                }
+                else
+                {
+                    Console.WriteLine($"Conciertos en la ciudad {city}");
+                    foreach (var c in ConcertsPerCity)
+                    {
+                        Console.WriteLine($"- Nombre del concierto: {c.Name}" +
+                                          $"- Artistas: {string.Join(", ", c.Artists)}\n" +
+                                          $"- Fecha y hora del concierto: {c.DateOn} {c.TimeOn}" +
+                                          $". ");
+                    }
+                }
+               
+                
+                break;
+        }
+    }
 }

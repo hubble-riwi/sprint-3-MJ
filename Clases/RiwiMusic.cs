@@ -67,6 +67,11 @@ public class RiwiMusic
         return ListClients;
     }
 
+    public List<Concert> GetConcerts()
+    {
+        return ListConcerts;
+    }
+
     public bool DeleteClient(int document)
     {
         for (int i = 0; i < ListClients.Count; i++)
