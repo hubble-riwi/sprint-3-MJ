@@ -71,6 +71,11 @@ public class RiwiMusic
         return ListTickets;
     }
 
+    public List<Concert> GetConcerts()
+    {
+        return ListConcerts;
+    }
+
     public bool DeleteClient(int document)
     {
         for (int i = 0; i < ListClients.Count; i++)
@@ -84,10 +89,6 @@ public class RiwiMusic
         return false;
     }
     
-    public List<Concert> GetConcerts()
-    {
-        return ListConcerts;
-    }
     
     public void DeleteConcert(int idConcert)
     {
@@ -96,6 +97,7 @@ public class RiwiMusic
             ListConcerts.RemoveAt(idConcert);
         }
     }
+
     
     public void DeleteTicket(int idTicket)
     {
@@ -104,9 +106,17 @@ public class RiwiMusic
             ListTickets.RemoveAt(idTicket);
         }
     }
+    
+    public object ReturnIdConcert(string name)
+    {
+        for (int i = 0; i < ListConcerts.Count; i++)
+        {
+            if (ListConcerts[i].Name == name)
+            {
+                return i;
+            }
+        }
 
-    
-    
-    
-    
+        return null;
+    }
 }

@@ -1,5 +1,5 @@
 namespace RiwiMusic.Clases;
-
+using Spotify;
 public class Concert
 {
     public string Name { get; set; }
@@ -17,5 +17,5 @@ public class Concert
         TimeOn = timeOn;
         Place = place;
         BasePrice = basePrice;
-    }
+    } 
 }
