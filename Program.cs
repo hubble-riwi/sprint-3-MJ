@@ -349,13 +349,45 @@ void Concerts()
 
 void HistoryBuys()
 {
-    
+    Console.Write("Ingrese el documento del cliente: ");
+    string validation =  Console.ReadLine();
+
+    if (int.TryParse(validation, out int document))
+    {
+        var tickets = riwiMusic.GetTickets();
+        var concerts = riwiMusic.GetConcerts();
+
+
+        try
+        {
+            var BuysPerUser = from t in tickets
+                join c in concerts on t.IdConcert equals riwiMusic.ReturnIdConcert((c.Name))
+                where t.DocumentClient == document
+                select new
+                {
+                    NameConcert = c.Name,
+                    DateConcert = c.DateOn,
+                };
+
+            Console.WriteLine("Crompras realizadas por el usuario");
+            foreach (var buy in BuysPerUser)
+            {
+                Console.Write($"- Nombre del concierto: {buy.NameConcert} \n" +
+                              $"- Fecha del concierto: {buy.DateConcert}");
+            }
+        }
+        catch
+        {
+            Console.WriteLine("El usuario no ha hecho compras!");
+        }
+    }
 }
 
 void Querys()
 {
     Console.Clear();
     bool flag = true;
+    string validation;
 
     while (flag)
     {
@@ -365,6 +397,7 @@ void Querys()
                       "3. Consultar el concierto con más tiquetes vendidos\n " +
                       "4. Consultar ingresos totales de un concierto\n" +
                       "5. Consultar cliente con más compras realizadas \n" +
+                      "6. Regresar \n" +
                       ">> ");
         string option = Console.ReadLine();
 
@@ -373,7 +406,7 @@ void Querys()
             case "1":
                 Console.Write("Ingrese la ciudad: ");
                 string city = Console.ReadLine();
-                var concerts =  riwiMusic.GetConcerts();
+                var concerts = riwiMusic.GetConcerts();
                 var ConcertsPerCity = from c in concerts where c.Place == city select c;
 
                 if (ConcertsPerCity.Count() == 0)
@@ -385,14 +418,56 @@ void Querys()
                     Console.WriteLine($"Conciertos en la ciudad {city}");
                     foreach (var c in ConcertsPerCity)
                     {
-                        Console.WriteLine($"- Nombre del concierto: {c.Name}" +
+                        Console.WriteLine($"- Nombre del concierto: {c.Name} \n" +
                                           $"- Artistas: {string.Join(", ", c.Artists)}\n" +
-                                          $"- Fecha y hora del concierto: {c.DateOn} {c.TimeOn}" +
-                                          $". ");
+                                          $"- Fecha y hora del concierto: {c.DateOn} - {c.TimeOn} \n" +
+                                          $"- Precio: {c.BasePrice}\n ");
                     }
                 }
-               
                 
+                break;
+            
+            case "2":
+                Console.Write("Ingrese la primer fecha (YYYY-MM-DD): ");
+                validation = Console.ReadLine();
+                if (DateOnly.TryParse(validation, out var FirstDate))
+                {
+                    Console.Write("Ingres la segunda fecha (YYYY-MM-DD): ");
+                    validation = Console.ReadLine();
+
+                    if (DateOnly.TryParse(validation, out var SecondDate))
+                    {
+                        var concertstwo = riwiMusic.GetConcerts();
+                        var concertsDates = from c in concertstwo
+                            where c.DateOn >= FirstDate && c.DateOn <= SecondDate
+                            select c;
+                        
+                            Console.WriteLine($"Conciertos de {FirstDate} a {SecondDate}");
+                            foreach (var concert in concertsDates)
+                            {
+                                Console.WriteLine($"- Nombre del concierto: {concert.Name} \n" +
+                                                  $"- Artistas: {string.Join(", ", concert.Artists)}\n" +
+                                                  $"- Fecha y hora del concierto: {concert.DateOn} - {concert.TimeOn} \n" +
+                                                  $"- Precio: {concert.BasePrice}\n ");
+                            }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: Ingrese un fecha correcta");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Error: Ingrese un fecha correcta");
+                }
+                break;
+            
+            case "3":
+                
+                break;
+            
+            case "6":
+                flag = false;
                 break;
         }
     }

@@ -84,10 +84,6 @@ public class RiwiMusic
         return false;
     }
     
-    public List<Concert> GetConcerts()
-    {
-        return ListConcerts;
-    }
     
     public void DeleteConcert(int idConcert)
     {
@@ -96,9 +92,17 @@ public class RiwiMusic
             ListConcerts.RemoveAt(idConcert);
         }
     }
+    
+    public object ReturnIdConcert(string name)
+    {
+        for (int i = 0; i < ListConcerts.Count; i++)
+        {
+            if (ListConcerts[i].Name == name)
+            {
+                return i;
+            }
+        }
 
-    
-    
-    
-    
+        return null;
+    }
 }
