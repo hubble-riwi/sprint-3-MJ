@@ -22,22 +22,21 @@ public class RiwiMusic
     {
         ListClients.Add(new(document, name, phone, email));
     }
+    
+    
 
     public bool TryGetConcert(int idConcert, out Concert concert)
     {
-        bool found = false;
-        for (int i = 0; i < ListConcerts.Count; i++)
+        if (idConcert >= 0 && idConcert < ListConcerts.Count)
         {
-            if (idConcert == i)
-            {
-                concert = ListConcerts[i];
-                found = true;       
-            }
+            concert = ListConcerts[idConcert];
+            return true;
         }
 
         concert = null;
-        return found;
+        return false;
     }
+
     
     public bool TryGetTicket(int idTicket, out Tickets ticket)
     {
@@ -84,4 +83,22 @@ public class RiwiMusic
         }
         return false;
     }
+    
+    public List<Concert> GetConcerts()
+    {
+        return ListConcerts;
+    }
+    
+    public void DeleteConcert(int idConcert)
+    {
+        if (idConcert >= 0 && idConcert < ListConcerts.Count)
+        {
+            ListConcerts.RemoveAt(idConcert);
+        }
+    }
+
+    
+    
+    
+    
 }
