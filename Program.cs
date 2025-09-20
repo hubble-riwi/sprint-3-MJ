@@ -1,4 +1,6 @@
-﻿using RiwiMusic.Clases;
+﻿using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
+using RiwiMusic.Clases;
 using Spotify;
 
 bool flag = true;
@@ -548,13 +550,14 @@ void Querys()
     Console.Clear();
     bool flag = true;
     string validation;
+    var allConcerts = riwiMusic.GetConcerts();
 
     while (flag)
     {
         Console.Write("-- Consultas avanzadas-- \n" +
                       "1. Consultar conciertos por ciudad\n" +
-                      "2. Consultar conciertos por rango de fechas\n " +
-                      "3. Consultar el concierto con más tiquetes vendidos\n " +
+                      "2. Consultar conciertos por rango de fechas\n" +
+                      "3. Consultar el concierto con más tiquetes vendidos\n" +
                       "4. Consultar ingresos totales de un concierto\n" +
                       "5. Consultar cliente con más compras realizadas \n" +
                       "6. Regresar \n" +
@@ -584,9 +587,9 @@ void Querys()
                                           $"- Precio: {c.BasePrice}\n ");
                     }
                 }
-                
+
                 break;
-            
+
             case "2":
                 Console.Write("Ingrese la primer fecha (YYYY-MM-DD): ");
                 validation = Console.ReadLine();
@@ -599,17 +602,17 @@ void Querys()
                     {
                         var concertstwo = riwiMusic.GetConcerts();
                         var concertsDates = from c in concertstwo
-                            where c.DateOn >= FirstDate && c.DateOn <= SecondDate
-                            select c;
-                        
-                            Console.WriteLine($"Conciertos de {FirstDate} a {SecondDate}");
-                            foreach (var concert in concertsDates)
-                            {
-                                Console.WriteLine($"- Nombre del concierto: {concert.Name} \n" +
-                                                  $"- Artistas: {string.Join(", ", concert.Artists)}\n" +
-                                                  $"- Fecha y hora del concierto: {concert.DateOn} - {concert.TimeOn} \n" +
-                                                  $"- Precio: {concert.BasePrice}\n ");
-                            }
+                                            where c.DateOn >= FirstDate && c.DateOn <= SecondDate
+                                            select c;
+
+                        Console.WriteLine($"Conciertos de {FirstDate} a {SecondDate}");
+                        foreach (var concert in concertsDates)
+                        {
+                            Console.WriteLine($"- Nombre del concierto: {concert.Name} \n" +
+                                              $"- Artistas: {string.Join(", ", concert.Artists)}\n" +
+                                              $"- Fecha y hora del concierto: {concert.DateOn} - {concert.TimeOn} \n" +
+                                              $"- Precio: {concert.BasePrice}\n ");
+                        }
                     }
                     else
                     {
@@ -621,11 +624,83 @@ void Querys()
                     Console.WriteLine("Error: Ingrese un fecha correcta");
                 }
                 break;
-            
+
             case "3":
+                var bestSelling =
+                    (from t in riwiMusic.GetTickets()
+                     group t by t.IdConcert into groupC
+                     orderby groupC.Sum(x => x.QuantityTickets) descending
+                     select new
+                     {
+                         IdConcert = groupC.Key,
+                         totalSold = groupC.Sum(x => x.QuantityTickets)
+                     }).FirstOrDefault();
+
+                if (bestSelling == null)
+                {
+                    Console.WriteLine("No hay tiquetes vendidos todavía.");
+                    break;
+                }
+
+
+                int id = bestSelling.IdConcert;
+                if (id < 0 || id >= allConcerts.Count)
+                {
+                    Console.WriteLine("Error: el concierto referenciado por las ventas no existe.");
+                    break;
+                }
+
+                var concertF = allConcerts[id];
+
+                Console.WriteLine("Concierto con más tiquetes vendidos:");
+                Console.WriteLine($"- Nombre: {concertF.Name}");
+                Console.WriteLine($"- Artistas: {string.Join(", ", concertF.Artists)}");
+                Console.WriteLine($"- Lugar: {concertF.Place}");
+                Console.WriteLine($"- Fecha y hora: {concertF.DateOn} {concertF.TimeOn}");
+                Console.WriteLine($"- Tickets vendidos: {bestSelling.totalSold}");
+                break;
+            case "4":
+
+                for (int i = 0; i < riwiMusic.GetConcerts().Count; i++)
+                {
+                    Console.WriteLine($"{i}. {allConcerts[i].Name} | {allConcerts[i].Place}");
+                }
+
+                Console.Write("Ingrese el id del concierto para consultar ingresos: ");
+                int idConcert = int.Parse(Console.ReadLine()!);
+                var incomes = (from t in riwiMusic.GetTickets()
+                                where t.IdConcert == idConcert
+                                select t.QuantityTickets).Sum()
+                                * riwiMusic.GetConcerts()[idConcert].BasePrice;
+                Console.WriteLine($"Los ingresos totales son {incomes}");
+                break;
+            case "5":
+                var cMorePurchases = (from t in riwiMusic.GetTickets()
+                                      group t by t.DocumentClient into groupD
+                                      orderby groupD.Sum(x => x.QuantityTickets) descending
+                                      select new
+                                      {
+                                          documentC = groupD.Key,
+                                          totalPurchases = groupD.Sum(x => x.QuantityTickets)
+                                      }).FirstOrDefault();
+                if (cMorePurchases == null)
+                {
+                    Console.WriteLine("No hay tiquetes vendidos todavía.");
+                    break;
+                }
+
+                int doc = cMorePurchases.documentC;
+                if (!riwiMusic.TryGetClient(doc, out Client clientMorePurchases))
+                {
+                    Console.WriteLine("Error: el cliente referenciado por las compras no existe.");
+                    break;
+                }
+                Console.WriteLine("Cliente con más compras realizadas:");
+                Console.WriteLine($"- Documento: {clientMorePurchases.ReturnDocument()}");
+                Console.WriteLine($"- Nombre: {clientMorePurchases.Name}");
+                Console.WriteLine($"- Total de tiquetes comprados: {cMorePurchases.totalPurchases}");
                 
                 break;
-            
             case "6":
                 flag = false;
                 break;
