@@ -54,20 +54,29 @@ public class RiwiMusic
         return found;
     }
     
-    public bool TryGetClient(int idClient, out Client client)
+    public bool TryGetClient(int document, out Client client)
     {
-        bool found = false;
+        client = ListClients.FirstOrDefault(c => c.ReturnDocument() == document);
+        
+        return client != null;
+    }
+
+    public List<Client> GetClients()
+    {
+        return ListClients;
+    }
+
+    public bool DeleteClient(int document)
+    {
         for (int i = 0; i < ListClients.Count; i++)
         {
-            if (idClient == i)
+            if (ListClients[i].ReturnDocument() == document)
             {
-                client = ListClients[i];
-                found = true;
+                ListClients.RemoveAt(i);
+                return true;
             }
         }
-
-        client = null;
-        return found;
+        return false;
     }
     
     public List<Concert> GetConcerts()
